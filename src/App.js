@@ -2,15 +2,17 @@ import './App.css';
 import {useEffect, useState} from 'react';
 import {Card} from './Card';
 
-let AutoDraw = null;
-
 const App = () => {
     const [Ddeck,setDdeck] = useState([])
     const [Mdeck,setMdeck] = useState([])
     const [Dscore,setDscore] = useState(0)
     const [Mscore,setMscore] = useState(0)
+    
+    const [EndCheck,setEndCheck] = useState(true)
     const [Stand,setStand] = useState(false)
-    const [Restart,setRestart] = useState(false)
+    const [AutoCheck,setAutoCheck] = useState(false)
+
+    let AutoDraw = null;
     
     const DealerDeck = () => {
         if (Ddeck) return Ddeck.map(item=> <div className="d-card">{item.num}</div>)
@@ -39,24 +41,25 @@ const App = () => {
     }
 
     useEffect(()=>{
-        // if(Mscore == 21)
-        // {
-        //     alert("블랙잭!")
-        // }
+        if(Mscore >= 21)
+        {
+            setStand(true)
+            setEndCheck(false)
+        }
     },[Mscore])
 
     useEffect(()=>{
-        if(Stand)
+        if(AutoCheck)
         {
             DealerDraw()
         }
-    },[Stand])
+    },[AutoCheck])
 
     const DealerDraw = () => {
         let Deck = Ddeck;
         let DealerScore = Dscore;
         let MyScore = Mscore;
-
+        
         AutoDraw = setInterval(() => {
             const random = Math.floor((Math.random() * (13 - 0)) + 0);
             Deck = [...Deck,{num:Card[random].num}];
@@ -70,12 +73,9 @@ const App = () => {
             }
             setDdeck(Deck)
             setDscore(DealerScore)
-            if(MyScore <= DealerScore)
+            if(MyScore <= DealerScore || DealerScore >= 21)
             {
-                clearInterval(AutoDraw)
-            }
-            if(DealerScore >= 21)
-            {
+                setEndCheck(false)
                 clearInterval(AutoDraw)
             }
         },500)
@@ -84,18 +84,19 @@ const App = () => {
     }
 
     const Reset = () => {
+        clearInterval(AutoDraw)
         setMdeck([])
         setDdeck([])
         setMscore(0)
         setDscore(0)
+        setEndCheck(true)
+        setAutoCheck(false)
         setStand(false)
-        setRestart(true)
-        clearInterval(AutoDraw)
     }
 
     const StandCard = () => {
+        setAutoCheck(true)
         setStand(true)
-        setRestart(false)
     }
 
     return (
@@ -109,9 +110,9 @@ const App = () => {
                 </div>
             </div>
             <div className="tools">
-                <input type="button" onClick={() => Draw()} value={"드로우"} disabled={(Stand || Mscore >= 21) ? true : false}/>
-                <input type="button" onClick={() => Reset()} value={"재시작"} disabled={(!Stand && Mscore === 0) ? true : false}/>
-                <input type="button" onClick={() => StandCard()} value={"스탠드"} disabled={(!Stand && Mscore === 0) ? true : false}/>
+                <input type="button" onClick={() => Draw()} value={"드로우"} disabled={(AutoCheck || Mscore >= 21) ? true : false}/>
+                <input type="button" onClick={() => StandCard()} value={"스탠드"} disabled={(Stand || Mscore === 0) ? true : false}/>
+                <input type="button" onClick={() => Reset()} value={"재시작"} disabled={EndCheck ? true : false}/>
             </div>
             <div className="m-card-form">
                 <p>- 카드 -</p>
