@@ -2,11 +2,56 @@ html, body{
     height: 100%;
 }
 
+* {
+    font-family: "notoRegular";
+}
+
 .App {
-    height: 100vh;
+    height: 100%;
     width: 100%;
     display: flex;
     flex-direction: column;
+}
+
+.App .how-play {
+    position: absolute;
+}
+
+.how-play-modal {
+    background: #fff;
+    width: 100%;
+    height: 80%;
+}
+
+.how-play-modal .how-play-modal-title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #0040f1;
+    height: 70px;
+    font-family: "notoBold";
+    font-size: 30px;
+    color:#fff;
+}
+
+.how-play-modal .how-play-modal-step {
+    cursor: pointer;
+    padding: 1%;
+    width: 100%;
+}
+
+.how-play-modal .how-play-rule {
+    margin:1%;
+    font-size: 20px;
+    line-height: 60px;
+}
+
+.how-play-modal .modal-colose {
+    line-height: 1;
+    font-size: 40px;
+    font-family: "notoBold";
+    outline: none;
+    color:#fff;
 }
 
 .App .tools {
@@ -14,8 +59,19 @@ html, body{
 }
 
 .App .d-card-form, .App .m-card-form {
+    padding: 1.3%;
+    min-height: 450px;
     height: 50%;
     text-align: center;
+}
+
+.App .d-card-form .score, .App .m-card-form .score {
+    font-size: 30px;
+    font-family: "notoBold";
+}
+
+.App .m-card-form .my-money {
+    font-size: 15px;
 }
 
 .App .d-card-form .d-card-list, .App .m-card-form .m-card-list {
@@ -34,4 +90,44 @@ html, body{
     background-color: #3b3b3b;
     border-radius: 10px;
     margin:0 10px;
+}
+
+
+@font-face {
+    font-family: "notoBlack";
+    src:url("./fonts/NotoSansKR-Black.otf");
+}
+
+@font-face {
+    font-family: "notoBold";
+    src:url("./fonts/NotoSansKR-Bold.otf");
+}
+
+@font-face {
+    font-family: "notoLight";
+    src:url("./fonts/NotoSansKR-Light.otf");
+}
+
+@font-face {
+    font-family: "notoMedium";
+    src:url("./fonts/NotoSansKR-Medium.otf");
+}
+
+@font-face {
+    font-family: "notoRegular";
+    src:url("./fonts/NotoSansKR-Regular.otf");
+}
+
+@font-face {
+    font-family: "notoThin";
+    src:url("./fonts/NotoSansKR-Thin.otf");
+}
+
+@media screen and (max-width: 980px) {
+    .App .how-play {
+        position: relative;
+    }
+    .ant-steps-horizontal:not(.ant-steps-label-vertical) .ant-steps-item {
+        width: 100%;
+    }
 }
