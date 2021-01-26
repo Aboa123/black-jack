@@ -17,8 +17,8 @@ const App = () => {
     const [Mscore,setMscore] = useState(0)
 
     const [MyMoney,setMyMoney] = useState(2500000)
-    const [DealerMoney,setDealerMoney] = useState(1000000000)
-    const [Betmoney,setBetmoney] = useState(0)
+    const [DealerMoney,setDealerMoney] = useState(100000000)
+    const [Betmoney,setBetmoney] = useState(100)
     
     const [EndCheck,setEndCheck] = useState(true)
     const [Stand,setStand] = useState(false)
@@ -80,8 +80,8 @@ const App = () => {
         //블랙잭
         if(Mscore === 21)
         {
-            setMyMoney(MyMoney+(Betmoney*2))
-            setDealerMoney(DealerMoney-(Betmoney*2))
+            setMyMoney(MyMoney+Betmoney)
+            setDealerMoney(DealerMoney-Betmoney)
             setDefeatScore(0)
             setVictoryScore(VictoryScore+1)
             setGameResult("블랙잭! 승리")
@@ -100,25 +100,21 @@ const App = () => {
 
     useEffect(()=>{
         //딜러버스트
-        if(Dscore > 21)
+        if(Dscore > 21 && !EndCheck)
         {
-            setMyMoney(MyMoney+(Betmoney*2))
+            setMyMoney(MyMoney+Betmoney)
             setDealerMoney(DealerMoney-Betmoney)
             setDefeatScore(0)
             setVictoryScore(VictoryScore+1)
             setGameResult("딜러 버스트! 승리")
         }
         //무승부
-        if(Dscore === Mscore)
+        if(Dscore === Mscore && !EndCheck)
         {
-            setMyMoney(MyMoney)
-            if(Dscore != 0 && Mscore != 0 && MyMoney != 2500000)
-            {
-                setGameResult("무승부")
-            }
+            setGameResult("무승부")
         }
         //딜러승리
-        if(Dscore > Mscore && Dscore < 22)
+        if(Dscore > Mscore && Dscore < 22 && !EndCheck)
         {
             setMyMoney(MyMoney-Betmoney)
             setDealerMoney(DealerMoney+Betmoney)
@@ -126,8 +122,17 @@ const App = () => {
             setVictoryScore(0)
             setGameResult("딜러 승리! 패배")
         }
+        //딜러패배
+        if(Dscore !== Mscore && Dscore >= 17 && !EndCheck)
+        {
+            setMyMoney(MyMoney+Betmoney)
+            setDealerMoney(DealerMoney-Betmoney)
+            setDefeatScore(VictoryScore+1)
+            setDefeatScore(0)
+            setGameResult("딜러 패배! 승리")
+        }
         //딜러블랙잭
-        if(Dscore > Mscore && Dscore === 21)
+        if(Dscore > Mscore && Dscore === 21 && !EndCheck)
         {
             setMyMoney(MyMoney-Betmoney)
             setDealerMoney(DealerMoney+Betmoney)
@@ -135,7 +140,7 @@ const App = () => {
             setVictoryScore(0)
             setGameResult("딜러 블랙잭! 패배")
         }
-    },[Dscore])
+    },[Dscore,EndCheck])
 
     useEffect(()=>{
         if(DealerMoney <= 0)
@@ -155,36 +160,57 @@ const App = () => {
         }
     },[DealerMoney])
 
-    useEffect(()=>{
-        if(AutoCheck)
-        {
-            DealerDraw()
-        }
-    },[AutoCheck])
-
     useEffect(() => {
-        if(DefeatScore === 5)
+        if(VictoryScore === 3)
+        {
+            notification.open({
+                message: '딜러로부터 메세지입니다!',
+                duration: 5,
+                description: <div>
+                    <img style={{width:"130px"}} src={"/img/str.png"}/>
+                    3연승? 축하하지 아직 할만해 드루와!
+               </div>,
+                style: {
+                    width:600
+                }
+            });
+        }
+        if(VictoryScore === 5)
+        {
+            notification.open({
+                message: '딜러로부터 메세지입니다!',
+                duration: 5,
+                description: <div>
+                    <img style={{width:"130px"}} src={"/img/mu.png"}/>
+                    제발...무승부로 해줘... 당신 5연승째라구
+               </div>,
+                style: {
+                    width:600
+                }
+            });
+        }
+        if(DefeatScore === 3)
         {
             notification.open({
                 message: '딜러로부터 메세지입니다!',
                 duration: 5,
                 description: <div>
                     <img style={{width:"100px"}} src={"/img/power.png"}/>
-                    당신 벌써...5연패야...
+                    당신 벌써...3연패야...
                </div>,
                 style: {
                     width:300
                 }
             });
         }
-        if(DefeatScore === 10)
+        if(DefeatScore === 5)
         {
             notification.open({
                 message: '치료가 필요할 정도로 심각한 블랙잭 중독입니다.',
                 duration: 5,
                 description: <div>
-                    <img style={{width:"100px"}} src={"/img/zawa.png"}/>
-                    자와...자와... 10연패 달성
+                    <img style={{width:"200px"}} src={"/img/zawa.png"}/>
+                    자와...자와... 5연패 달성
                 </div>,
                 style: {
                     width:600
@@ -199,49 +225,19 @@ const App = () => {
                 description: <div>
                     <img style={{width:"200px"}} src={"/img/warning.png"}/><br/>
                     돈은 목숨보다 소중하다.<br/>
-                    항상 소중히 여기도록 도박은 이제 그만하도록해
+                    적당히 챙겨줄태니까 오늘은 여기까지만 하고 돌아가<br/>
+                    도박은 이제 그만하도록해
                 </div>,
                 style: {
                     width:400
                 }
             });
-            setMyMoney(1000000)
+            setMyMoney(2000000)
             setVictoryScore(0)
-            setDefeatScore(1)
         }
-    },[DefeatScore])
+    },[DefeatScore,VictoryScore])
 
-    useEffect(() => {
-        if(VictoryScore === 5)
-        {
-            notification.open({
-                message: '딜러로부터 메세지입니다!',
-                duration: 5,
-                description: <div>
-                    <img style={{width:"130px"}} src={"/img/str.png"}/>
-                    5연승? 축하하지 아직 할만해 드루와!
-               </div>,
-                style: {
-                    width:600
-                }
-            });
-        }
-        if(VictoryScore === 10)
-        {
-            notification.open({
-                message: '딜러로부터 메세지입니다!',
-                duration: 5,
-                description: <div>
-                    <img style={{width:"130px"}} src={"/img/mu.png"}/>
-                    제발...무승부로 해줘... 당신 10연승째라구
-               </div>,
-                style: {
-                    width:600
-                }
-            });
-        }
-    },[VictoryScore])
-
+    // 딜러 자동 드로우
     const DealerDraw = () => {
         let Deck = Ddeck;
         let DealerScore = Dscore;
@@ -260,7 +256,12 @@ const App = () => {
             }
             setDdeck(Deck)
             setDscore(DealerScore)
-            if(MyScore <= DealerScore || DealerScore >= 21)
+            if(DealerScore >= 17)
+            {
+                setEndCheck(false)
+                clearInterval(AutoDraw)
+            }
+            if(MyScore < DealerScore || DealerScore >= 21)
             {
                 setEndCheck(false)
                 clearInterval(AutoDraw)
@@ -279,11 +280,13 @@ const App = () => {
         setEndCheck(true)
         setAutoCheck(false)
         setStand(false)
+        setGameResult("")
     }
 
     const StandCard = () => {
         setAutoCheck(true)
         setStand(true)
+        DealerDraw()
     }
 
     const NumOnly = e => {
@@ -293,12 +296,6 @@ const App = () => {
             setBetmoney(Number(e.target.value))
         }
     }
-
-    const closeIcon = (
-        <div className="modal-colose">
-            X
-        </div>
-    );
 
     const { Step } = Steps;
     const [StepIndex,setStepIndex] = useState(0)
@@ -317,10 +314,8 @@ const App = () => {
             <div className="d-card-form">
                 <UserOutlined style={{fontSize:50}} />
                 <div className="score">점수 : {Dscore}</div>
-                <div className="dealer-money">소지금액 : {MoneyReplace(DealerMoney)}골드</div>
-                <div className="d-card-list">
-                    {DealerDeck()}
-                </div>
+                <div className="dealer-money">딜러 소지골드 : {MoneyReplace(DealerMoney)}골드</div>
+                <div className="d-card-list">{DealerDeck()}</div>
             </div>
             <div className="tools">
                 <p>
@@ -337,12 +332,8 @@ const App = () => {
             <div className="m-card-form">
                 {GameResult}
                 <div className="score">점수 : {Mscore}</div>
-                <div className="my-money">
-                    소지금액 : {MoneyReplace(MyMoney)}골드<br/>
-                </div>
-                <div className="m-card-list">
-                    {Mydeck()}
-                </div>
+                <div className="my-money">내 소지골드 : {MoneyReplace(MyMoney)}골드</div>
+                <div className="m-card-list">{Mydeck()}</div>
             </div>
             <Modal 
             classNames={{
@@ -350,7 +341,7 @@ const App = () => {
             }}
             open={modal} 
             onClose={()=>setModal(false)}
-            closeIcon={closeIcon}>
+            closeIcon={<div className="modal-colose">X</div>}>
                 <div className="how-play-modal-title">플레이 방법</div>
                 <Steps current={StepIndex} className="how-play-modal-step">
                     <Step onClick={()=>setStepIndex(0)} title="시작!" description="블랙잭은 아주간단해요!" />
@@ -360,6 +351,7 @@ const App = () => {
                 {
                     StepIndex === 0 ?
                     <div className="how-play-rule">
+                        먼저 이 게임은 모두들 편하게 즐기도록 만들어졌기에 룰이 실제 게임과 다를 수 있습니다.<br/>
                         블랙잭은 숫자 21을 맞추거나 최대한 가깝게 맞추어 딜러를 이기면 배팅금액의 2배를 가져가는 게임입니다!<br/>
                         <b>카드의 종류는 1 ~ 9카드, A, K, Q, J가 있습니다.</b><br/>
                         1 ~ 9 카드는 각각 1 ~ 9점, K, Q, J 카드는 10점입니다.<br/>
