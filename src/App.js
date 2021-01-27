@@ -123,7 +123,7 @@ const App = () => {
             setGameResult("딜러 승리! 패배")
         }
         //딜러패배
-        if(Dscore !== Mscore && Dscore >= 17 && !EndCheck)
+        if(Dscore !== Mscore && Dscore < Mscore && Dscore >= 17 && !EndCheck)
         {
             setMyMoney(MyMoney+Betmoney)
             setDealerMoney(DealerMoney-Betmoney)
@@ -321,9 +321,9 @@ const App = () => {
                 <p>
                     <span style={{marginRight:5}}>배팅금액 :</span>
                     <Tooltip title={"숫자만 입력해주세요"}>
-                        <Input onChange={(e) => NumOnly(e)} style={{width:200}} value={Betmoney} disabled={(AutoCheck || Mscore >= 21)} />
+                        <Input onChange={(e) => NumOnly(e)} style={{width:200}} value={MoneyReplace(Betmoney)} disabled={(AutoCheck || Mscore >= 21)} />
                     </Tooltip>
-                    <Button style={{marginLeft:5}} type="primary" onClick={() => setBetmoney(MyMoney)}>MAX</Button>
+                    <Button style={{marginLeft:5}} type="primary" onClick={() => setBetmoney(MyMoney)} disabled={Mscore !== 0 ? true : false}>MAX</Button>
                 </p>
                 <Button type="primary" onClick={() => Draw()} disabled={(AutoCheck || Mscore >= 21) ? true : false}>드로우</Button>
                 <Button style={{margin:10}} type="default" onClick={() => StandCard()} disabled={(Stand || Mscore === 0) ? true : false}>스탠드</Button>
