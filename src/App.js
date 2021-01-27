@@ -20,6 +20,9 @@ const App = () => {
     const [DealerMoney,setDealerMoney] = useState(100000000)
     const [Betmoney,setBetmoney] = useState(100)
     
+    // 계산용 배팅금액
+    const Betting = Number(Betmoney);
+
     const [EndCheck,setEndCheck] = useState(true)
     const [Stand,setStand] = useState(false)
     const [AutoCheck,setAutoCheck] = useState(false)
@@ -41,9 +44,9 @@ const App = () => {
     }
 
     const Draw = () => {
-        if(Betmoney > 99)
+        if(Betting > 99)
         {
-            if(Betmoney <= MyMoney)
+            if(Betting <= MyMoney)
             {
                 const random = Math.floor((Math.random() * (13 - 0)) + 0);
                 setMdeck([...Mdeck,{num:Card[random].num}])
@@ -72,6 +75,7 @@ const App = () => {
     }
 
     useEffect(()=>{
+        
         if(Mscore >= 21)
         {
             setStand(true)
@@ -80,8 +84,8 @@ const App = () => {
         //블랙잭
         if(Mscore === 21)
         {
-            setMyMoney(MyMoney+Betmoney)
-            setDealerMoney(DealerMoney-Betmoney)
+            setMyMoney(MyMoney+Betting)
+            setDealerMoney(DealerMoney-Betting)
             setDefeatScore(0)
             setVictoryScore(VictoryScore+1)
             setGameResult("블랙잭! 승리")
@@ -89,8 +93,8 @@ const App = () => {
         //버스트
         if(Mscore > 21)
         {
-            setMyMoney(MyMoney-Betmoney)
-            setDealerMoney(DealerMoney+Betmoney)
+            setMyMoney(MyMoney-Betting)
+            setDealerMoney(DealerMoney+Betting)
             setDefeatScore(DefeatScore+1)
             setVictoryScore(0)
             setGameResult("버스트! 패배")
@@ -102,8 +106,8 @@ const App = () => {
         //딜러버스트
         if(Dscore > 21 && !EndCheck)
         {
-            setMyMoney(MyMoney+Betmoney)
-            setDealerMoney(DealerMoney-Betmoney)
+            setMyMoney(MyMoney+Betting)
+            setDealerMoney(DealerMoney-Betting)
             setDefeatScore(0)
             setVictoryScore(VictoryScore+1)
             setGameResult("딜러 버스트! 승리")
@@ -116,8 +120,8 @@ const App = () => {
         //딜러승리
         if(Dscore > Mscore && Dscore < 22 && !EndCheck)
         {
-            setMyMoney(MyMoney-Betmoney)
-            setDealerMoney(DealerMoney+Betmoney)
+            setMyMoney(MyMoney-Betting)
+            setDealerMoney(DealerMoney+Betting)
             setDefeatScore(DefeatScore+1)
             setVictoryScore(0)
             setGameResult("딜러 승리! 패배")
@@ -125,8 +129,8 @@ const App = () => {
         //딜러패배
         if(Dscore !== Mscore && Dscore < Mscore && Dscore >= 17 && !EndCheck)
         {
-            setMyMoney(MyMoney+Betmoney)
-            setDealerMoney(DealerMoney-Betmoney)
+            setMyMoney(MyMoney+Betting)
+            setDealerMoney(DealerMoney-Betting)
             setDefeatScore(VictoryScore+1)
             setDefeatScore(0)
             setGameResult("딜러 패배! 승리")
@@ -134,8 +138,8 @@ const App = () => {
         //딜러블랙잭
         if(Dscore > Mscore && Dscore === 21 && !EndCheck)
         {
-            setMyMoney(MyMoney-Betmoney)
-            setDealerMoney(DealerMoney+Betmoney)
+            setMyMoney(MyMoney-Betting)
+            setDealerMoney(DealerMoney+Betting)
             setDefeatScore(DefeatScore+1)
             setVictoryScore(0)
             setGameResult("딜러 블랙잭! 패배")
@@ -293,7 +297,7 @@ const App = () => {
         const reg = /^-?\d*(\.\d*)?$/;
         if(reg.test(e.target.value))
         {
-            setBetmoney(Number(e.target.value))
+            setBetmoney(e.target.value)
         }
     }
 
@@ -321,13 +325,13 @@ const App = () => {
                 <p>
                     <span style={{marginRight:5}}>배팅금액 :</span>
                     <Tooltip title={"숫자만 입력해주세요"}>
-                        <Input onChange={(e) => NumOnly(e)} style={{width:200}} value={MoneyReplace(Betmoney)} disabled={(AutoCheck || Mscore >= 21)} />
+                        <Input onChange={(e) => NumOnly(e)} style={{width:200}} value={Betmoney} disabled={Mscore !== 0} />
                     </Tooltip>
-                    <Button style={{marginLeft:5}} type="primary" onClick={() => setBetmoney(MyMoney)} disabled={Mscore !== 0 ? true : false}>MAX</Button>
+                    <Button style={{marginLeft:5}} type="primary" onClick={() => setBetmoney(MyMoney)} disabled={Mscore !== 0}>MAX</Button>
                 </p>
-                <Button type="primary" onClick={() => Draw()} disabled={(AutoCheck || Mscore >= 21) ? true : false}>드로우</Button>
-                <Button style={{margin:10}} type="default" onClick={() => StandCard()} disabled={(Stand || Mscore === 0) ? true : false}>스탠드</Button>
-                <Button type="primary" onClick={() => Reset()} disabled={EndCheck ? true : false} danger>재시작</Button>
+                <Button type="primary" onClick={() => Draw()} disabled={AutoCheck || Mscore >= 21}>드로우</Button>
+                <Button style={{margin:10}} type="default" onClick={() => StandCard()} disabled={Stand || Mscore === 0}>스탠드</Button>
+                <Button type="primary" onClick={() => Reset()} disabled={EndCheck} danger>재시작</Button>
             </div>
             <div className="m-card-form">
                 {GameResult}
